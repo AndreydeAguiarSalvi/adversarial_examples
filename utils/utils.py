@@ -20,7 +20,7 @@ def create_argparser() -> dict:
     parser.add_argument('--momentum', type=float, default=0.9, help='momentum to Stochastic Gradient Descendent')
     parser.add_argument('--epochs_decay', nargs='*', type=int, help='kind of learning rate scheduler')
     parser.add_argument('--gamma', type=float, default=.5, help='gamma used in learning rate decay')
-    parser.add_argument('--try', type=int, default=0, help='number of attempt')
+    parser.add_argument('--try', type=str, default=0, help='number of attempt')
     parser.add_argument('--device', help='device id (i.e. 0 or 0,1 or cpu)')
     args = vars(parser.parse_args())
 
