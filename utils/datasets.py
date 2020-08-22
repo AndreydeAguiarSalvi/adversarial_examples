@@ -1,4 +1,5 @@
 import torch
+import random
 import numpy as np
 import torchvision.datasets as D
 from torch.utils.data import DataLoader
@@ -20,10 +21,10 @@ def get_CIFAR10(args, is_train=True, is_test=True, train_transform=None, test_tr
             transforms.RandomHorizontalFlip(),
             # transforms.RandomRotation(15),
             transforms.ColorJitter(
-                brightness=0.1*torch.randn(1),
-                contrast=0.1*torch.randn(1),
-                saturation=0.1*torch.randn(1),
-                hue=0.1*torch.randn(1)
+                brightness=0.1*random.uniform(0, 1),
+                contrast=0.1*random.uniform(0, 1),
+                saturation=0.1*random.uniform(0, 1),
+                hue=0.1*random.uniform(0, 1)
             ),
             transforms.Resize(64, 64),
             transforms.ToTensor(),
@@ -98,10 +99,10 @@ def get_CIFAR100(args, is_train=True, is_test=True, train_transform=None, test_t
             transforms.RandomHorizontalFlip(),
             # transforms.RandomRotation(15),
             transforms.ColorJitter(
-                brightness=0.1*torch.randn(1),
-                contrast=0.1*torch.randn(1),
-                saturation=0.1*torch.randn(1),
-                hue=0.1*torch.randn(1)
+                brightness=0.1*random.uniform(0, 1),
+                contrast=0.1*random.uniform(0, 1),
+                saturation=0.1*random.uniform(0, 1),
+                hue=0.1*random.uniform(0, 1)
             ),
             transforms.Resize(64, 64),
             transforms.ToTensor(),
