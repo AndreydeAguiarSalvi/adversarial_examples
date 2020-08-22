@@ -70,18 +70,18 @@ def get_CIFAR10(args, is_train=True, is_test=True, train_transform=None, test_tr
         
     if is_train:
         train_loader = DataLoader(
-            train_set, batch_size=args['batch_size''],
+            train_set, batch_size=args['batch_size'],
             num_workers=4,
             sampler=train_sampler
         )
         valid_loader = DataLoader(
-            valid_set, batch_size=args['batch_size''],
+            valid_set, batch_size=args['batch_size'],
             num_workers=4,
             sampler=valid_sampler
         )
     if is_test: 
         test_loader = DataLoader(
-            test_set, batch_size=args['batch_size''],
+            test_set, batch_size=args['batch_size'],
             num_workers=4
         )
     # Classes names
@@ -148,18 +148,18 @@ def get_CIFAR100(args, is_train=True, is_test=True, train_transform=None, test_t
         
     if is_train:
         train_loader = DataLoader(
-            train_set, batch_size=args['batch_size''],
+            train_set, batch_size=args['batch_size'],
             num_workers=4,
             sampler=train_sampler
         )
         valid_loader = DataLoader(
-            valid_set, batch_size=args['batch_size''],
+            valid_set, batch_size=args['batch_size'],
             num_workers=4,
             sampler=valid_sampler
         )
     if is_test: 
         test_loader = DataLoader(
-            test_set, batch_size=args['batch_size''],
+            test_set, batch_size=args['batch_size'],
             num_workers=4
         )
     # Classes names
@@ -211,18 +211,18 @@ def get_MNIST(args, is_train=True, is_test=True, train_transform=None, test_tran
     
     if is_train:
         train_loader = DataLoader(
-            train_set, batch_size=args['batch_size''],
+            train_set, batch_size=args['batch_size'],
             num_workers=4,
             sampler=train_sampler
         )
         valid_loader = DataLoader(
-            valid_set, batch_size=args['batch_size''],
+            valid_set, batch_size=args['batch_size'],
             num_workers=4,
             sampler=valid_sampler
         )
     if is_test:
         test_loader = DataLoader(
-            test_set, batch_size=args['batch_size''],
+            test_set, batch_size=args['batch_size'],
             num_workers=4
         )
     # Classes names
