@@ -10,7 +10,8 @@ import numpy as np
 import torch.nn as nn
 import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
-from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.tensorboard import SummaryWriter
+
 ##############
 # My classes #
 ##############
@@ -95,6 +96,6 @@ if __name__ == "__main__":
     milestones = args['epochs_decay']
     scheduler = lr_scheduler.MultiStepLR(optimizer, milestones= milestones, gamma= args['gamma'])
 
-    tb_writer = SummaryWriter(log_dir= args['folder'] + 'runs/')
+    # tb_writer = SummaryWriter(log_dir= args['folder'] + 'runs/')
 
     train(model, args, train_loader, valid_loader, tb_writer, criterion, optimizer, scheduler)
