@@ -78,6 +78,7 @@ def train(model, args, train_loader, valid_loader, tb_writer, criterion, optimiz
 
 if __name__ == "__main__":
     args = create_argparser()
+    if args['device'] != 'cpu': args['device'] = 'cuda:' + args['device']
     model = create_model(args)
     create_folder(args)
     
