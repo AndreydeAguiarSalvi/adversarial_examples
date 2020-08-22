@@ -6,7 +6,13 @@ import torchvision.transforms as transforms
 from torch.utils.data.sampler import SubsetRandomSampler
 
 
-def get_CIFAR10(is_train=True, is_test=True, train_transform=None, test_transform=None):
+def get_Dataset(args, is_train=True, is_test=True, train_transform=None, test_transform=None):
+    if args['dataset'] == 'CIFAR10': return get_CIFAR10(args, is_train, is_test, train_transform, test_transform)
+    elif args['dataset'] == 'CIFAR100': return get_CIFAR100(args, is_train, is_test, train_transform, test_transform)
+    elif args['dataset'] == 'MNIST': return get_MNIST(args, is_train, is_test, train_transform, test_transform)
+
+
+def get_CIFAR10(args, is_train=True, is_test=True, train_transform=None, test_transform=None):
     train_loader, valid_loader, test_loader, classes = None, None, None, None
     # Data Augmentation
     if train_transform is None:
@@ -63,28 +69,28 @@ def get_CIFAR10(is_train=True, is_test=True, train_transform=None, test_transfor
         
     if is_train:
         train_loader = DataLoader(
-            train_set, batch_size=64,
+            train_set, batch_size=args['size'],
             num_workers=4,
             sampler=train_sampler
         )
         valid_loader = DataLoader(
-            valid_set, batch_size=64,
+            valid_set, batch_size=args['size'],
             num_workers=4,
             sampler=valid_sampler
         )
     if is_test: 
         test_loader = DataLoader(
-            test_set, batch_size=64,
+            test_set, batch_size=args['size'],
             num_workers=4
         )
     # Classes names
     classes = ('plane', 'car', 'bird', 'cat',
             'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-    
-    return train_loader, valid_loader, test_loader, classes
+    args['classes'] = classes
+    return train_loader, valid_loader, test_loader
 
 
-def get_CIFAR100(is_train=True, is_test=True, train_transform=None, test_transform=None):
+def get_CIFAR100(args, is_train=True, is_test=True, train_transform=None, test_transform=None):
     train_loader, valid_loader, test_loader, classes = None, None, None, None
     # Data Augmentation
     if train_transform is None:
@@ -141,28 +147,26 @@ def get_CIFAR100(is_train=True, is_test=True, train_transform=None, test_transfo
         
     if is_train:
         train_loader = DataLoader(
-            train_set, batch_size=64,
+            train_set, batch_size=args['size'],
             num_workers=4,
             sampler=train_sampler
         )
         valid_loader = DataLoader(
-            valid_set, batch_size=64,
+            valid_set, batch_size=args['size'],
             num_workers=4,
             sampler=valid_sampler
         )
     if is_test: 
         test_loader = DataLoader(
-            test_set, batch_size=64,
+            test_set, batch_size=args['size'],
             num_workers=4
         )
     # Classes names
-    classes = ('plane', 'car', 'bird', 'cat',
-            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-    
+    args['classes'] = [i for i in range(100)]
     return train_loader, valid_loader, test_loader, classes   
 
 
-def get_MNIST(is_train=True, is_test=True, train_transform=None, test_transform=None):
+def get_MNIST(args, is_train=True, is_test=True, train_transform=None, test_transform=None):
     train_loader, valid_loader, test_loader, classes = None, None, None, None
     
     # Data Augmentation        
@@ -206,21 +210,21 @@ def get_MNIST(is_train=True, is_test=True, train_transform=None, test_transform=
     
     if is_train:
         train_loader = DataLoader(
-            train_set, batch_size=64,
+            train_set, batch_size=args['size'],
             num_workers=4,
             sampler=train_sampler
         )
         valid_loader = DataLoader(
-            valid_set, batch_size=64,
+            valid_set, batch_size=args['size'],
             num_workers=4,
             sampler=valid_sampler
         )
     if is_test:
         test_loader = DataLoader(
-            test_set, batch_size=64,
+            test_set, batch_size=args['size'],
             num_workers=4
         )
     # Classes names
     classes = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9') 
-    
-    return train_loader, valid_loader, test_loader, classes
+    args['classes'] = classes
+    return train_loader, valid_loader, test_loader

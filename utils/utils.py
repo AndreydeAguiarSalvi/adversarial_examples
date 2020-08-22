@@ -20,7 +20,7 @@ def create_argparser() -> dict:
     parser.add_argument('--momentum', type=float, default=0.9, help='momentum to Stochastic Gradient Descendent')
     parser.add_argument('--epochs_decay', nargs='*', type=int, help='kind of learning rate scheduler')
     parser.add_argument('--gamma', type=float, default=.5, help='gamma used in learning rate decay')
-    parser.add_argument('--seed', type=int, default=0, help='seed to use in training')
+    parser.add_argument('--try', type=int, default=0, help='number of attempt')
     parser.add_argument('--device', help='device id (i.e. 0 or 0,1 or cpu)')
     args = vars(parser.parse_args())
 
@@ -29,39 +29,34 @@ def create_argparser() -> dict:
 
 def create_model(args: dict) -> nn.Module:
     classes = 10 if args['dataset'] in ['MNIST', 'CIFAR10'] else 100
-    if args['model'] == 'ALEX': return AlexNet(classes, args['has_dropout'])
-    elif args['model'] == 'VGG16': return VGG('16', args['has_batchnorm'], args['has_dropout'], classes)
-    elif args['model'] == 'VGG19': return VGG('16', args['has_batchnorm'], args['has_dropout'], classes)
-    elif args['model'] == 'RESNET18': return ResNet('18', classes, args['has_batchnorm'])
-    else: return ResNet('50', classes, args['has_batchnorm'])
+    if args['model'] == 'ALEX': return AlexNet(classes, args['has_dropout']).to(args['device'])
+    elif args['model'] == 'VGG16': return VGG('16', args['has_batchnorm'], args['has_dropout'], classes).to(args['device'])
+    elif args['model'] == 'VGG19': return VGG('16', args['has_batchnorm'], args['has_dropout'], classes).to(args['device'])
+    elif args['model'] == 'RESNET18': return ResNet('18', classes, args['has_batchnorm']).to(args['device'])
+    else: return ResNet('50', classes, args['has_batchnorm']).to(args['device'])
 
 
 def create_folder(args: dict):
     import os
-    if not os.path.exists(args['model'] + os.sep + args['dataset'] + os.sep + args['attack'] + os.sep + args['seed']):
-        os.makedirs(args['model'] + os.sep + args['dataset'] + os.sep + args['attack'] + os.sep + args['seed'])
-    args['folder'] = args['model'] + os.sep + args['dataset'] + os.sep + args['attack'] + os.sep + args['seed']
+    if not os.path.exists(args['model'] + os.sep + args['dataset'] + os.sep + args['attack'] + os.sep + args['try']):
+        os.makedirs(args['model'] + os.sep + args['dataset'] + os.sep + args['attack'] + os.sep + args['try'])
+    args['folder'] = args['model'] + os.sep + args['dataset'] + os.sep + args['attack'] + os.sep + args['try'] + os.sep
 
 
-def evaluate(model: nn.Module, criterion: nn.CrossEntropyLoss, args: dict, loader: DataLoader, has_attack=None) -> dict:
+def evaluate(model: nn.Module, criterion: nn.CrossEntropyLoss, args: dict, loader: DataLoader) -> dict:
     result = {'total_acc': .0}
     
     model.eval()
 
-    num_classes = 10 if args['dataset'] in ['MNIST', 'CIFAR10'] else 100
-    mloss = .0
+    num_classes = len(args['classes'])
+    mloss = torch.zero(1).to(args['device'])
     class_correct = list(0. for i in range(num_classes))
     class_total = list(0. for i in range(num_classes))
 
-    if has_attack:
-        if args['attack'] == 'FGSM':
-            attack = FGSM(model, eps=args['epsilon'])
-
     with torch.no_grad():
-        pbar = tqdm(enumerate(loader), total=nb)  # progress bar
+        pbar = tqdm(enumerate(loader), total=len(loader))  # progress bar
         for i, (images, labels) in pbar:
             images, labels = images.to(args['device']), labels.to(args['device'])
-            if has_attack: images = fgsm_attack(images, labels).cuda()
             
             outputs = model(images)
             loss = criterion(outputs, labels)
@@ -79,7 +74,14 @@ def evaluate(model: nn.Module, criterion: nn.CrossEntropyLoss, args: dict, loade
             pbar.set_description(s)
 
     for i in range(num_classes):
-        result[str(i)] = 100 * class_correct[i] / class_total[i]
+        result[ args['classes'][i] ] = 100 * class_correct[i] / class_total[i]
         result['total_acc'] += class_correct[i] / class_total[i]
-    
+    result['loss'] = mloss
+
     return result
+
+
+def attack(model: nn.Module, criterion: nn.CrossEntropyLoss, args: dict, loader: DataLoader):
+    if has_attack:
+        if args['attack'] == 'FGSM':
+            attack = FGSM(model, eps=args['epsilon'])
