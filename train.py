@@ -79,7 +79,6 @@ def train(model, args, train_loader, valid_loader, tb_writer, criterion, optimiz
 if __name__ == "__main__":
     args = create_argparser()
     if args['device'] != 'cpu': args['device'] = 'cuda:' + args['device']
-    model = create_model(args)
     create_folder(args)
     
     f = open(args['folder'] + 'config.txt', 'w')
@@ -88,6 +87,7 @@ if __name__ == "__main__":
     f.close()
     
     train_loader, valid_loader, _ = get_Dataset(args, True, False)
+    model = create_model(args)
 
     args['best'] = args['folder'] + 'best.pt'
     args['last'] = args['folder'] + 'last.pt'
