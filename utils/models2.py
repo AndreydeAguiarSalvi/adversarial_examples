@@ -47,10 +47,10 @@ class AlexNet(nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2),
         )
         self.classifier = nn.Sequential(
-            valid_layers[args['Dropout']],
+            valid_layers[args['dropout']],
             nn.Linear(256 * 6 * 6, 4096),
             nn.ReLU(inplace=True),
-            valid_layers[args['Dropout']],
+            valid_layers[args['dropout']],
             nn.Linear(4096, 4096),
             nn.ReLU(inplace=True),
             nn.Linear(4096, len(args['classes'])),
@@ -70,10 +70,10 @@ class VGG(nn.Module):
         self.classifier = nn.Sequential(
             nn.Linear(512, 512),
             nn.ReLU(True),
-            valid_layers[args['Dropout']],
+            valid_layers[args['dropout']],
             nn.Linear(512, 256),
             nn.ReLU(True),
-            valid_layers[args['Dropout']],
+            valid_layers[args['dropout']],
             nn.Linear(256, len(args['classes'])),
         )
 
