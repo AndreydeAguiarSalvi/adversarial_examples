@@ -30,7 +30,7 @@ def train(model, args, train_loader, valid_loader, tb_writer, criterion, optimiz
     for epoch in range(args['epochs']):
         model.train()
         mloss = torch.zeros(1)
-        pbar = tqdm(enumerate(train_loader), total=nb)  # progress bar    
+        pbar = tqdm.tqdm(enumerate(train_loader), total=nb)  # progress bar    
         
         ################
         # Mini-batches #

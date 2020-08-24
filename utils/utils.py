@@ -54,7 +54,7 @@ def evaluate(model: nn.Module, criterion: nn.CrossEntropyLoss, args: dict, loade
     class_total = list(0. for i in range(num_classes))
 
     with torch.no_grad():
-        pbar = tqdm(enumerate(loader), total=len(loader))  # progress bar
+        pbar = tqdm.tqdm(enumerate(loader), total=len(loader))  # progress bar
         for i, (images, labels) in pbar:
             images, labels = images.to(args['device']), labels.to(args['device'])
             

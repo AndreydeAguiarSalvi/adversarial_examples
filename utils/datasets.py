@@ -26,7 +26,7 @@ def get_CIFAR10(args, is_train=True, is_test=True, train_transform=None, test_tr
                 saturation=0.1*random.uniform(0, 1),
                 hue=0.1*random.uniform(0, 1)
             ),
-            transforms.Resize(64, 64),
+            transforms.Resize((64, 64)),
             transforms.ToTensor(),
             transforms.Normalize(
                 (.491399679, .482158408, .446530914), 
@@ -35,7 +35,7 @@ def get_CIFAR10(args, is_train=True, is_test=True, train_transform=None, test_tr
         ])
     if test_transform is None:
         test_transform = transforms.Compose([
-            transforms.Resize(64, 64),
+            transforms.Resize((64, 64)),
             transforms.ToTensor(),
             transforms.Normalize(
                 (.491399679, .482158408, .446530914), 
@@ -104,7 +104,7 @@ def get_CIFAR100(args, is_train=True, is_test=True, train_transform=None, test_t
                 saturation=0.1*random.uniform(0, 1),
                 hue=0.1*random.uniform(0, 1)
             ),
-            transforms.Resize(64, 64),
+            transforms.Resize((64, 64)),
             transforms.ToTensor(),
             transforms.Normalize(
                 (0.5070751592371323, 0.48654887331495095, 0.4409178433670343), 
@@ -113,7 +113,7 @@ def get_CIFAR100(args, is_train=True, is_test=True, train_transform=None, test_t
         ])
     if test_transform is None:
         test_transform = transforms.Compose([
-            transforms.Resize(64, 64),
+            transforms.Resize((64, 64)),
             transforms.ToTensor(),
             transforms.Normalize(
                 (0.5070751592371323, 0.48654887331495095, 0.4409178433670343), 
@@ -175,13 +175,13 @@ def get_MNIST(args, is_train=True, is_test=True, train_transform=None, test_tran
         train_transform = transforms.Compose([
             transforms.RandomHorizontalFlip(),
             # transforms.RandomRotation(15),
-            transforms.Resize(64, 64),
+            transforms.Resize((64, 64)),
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,))
         ])
     if test_transform is None:
         test_transform = transforms.Compose([
-            transforms.Resize(64, 64),
+            transforms.Resize((64, 64)),
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,))
         ])
