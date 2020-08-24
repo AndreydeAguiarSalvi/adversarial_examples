@@ -99,4 +99,4 @@ if __name__ == "__main__":
 
     # tb_writer = SummaryWriter(log_dir= args['folder'] + 'runs/')
 
-    train(model, args, train_loader, valid_loader, tb_writer, criterion, optimizer, scheduler)
+    train(model, args, train_loader, valid_loader, None, criterion, optimizer, scheduler)
