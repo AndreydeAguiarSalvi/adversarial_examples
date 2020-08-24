@@ -11,7 +11,7 @@ class Identity(nn.Module):
         return x
 
 
-layers = {
+valid_layers = {
     'Dropout': nn.Dropout,
     'BatchNorm': nn.BatchNorm2d,
     'InstanceNorm': nn.InstanceNorm2d,
@@ -47,10 +47,10 @@ class AlexNet(nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2),
         )
         self.classifier = nn.Sequential(
-            layers[args['Dropout']],
+            valid_layers[args['Dropout']],
             nn.Linear(256 * 6 * 6, 4096),
             nn.ReLU(inplace=True),
-            layers[args['Dropout']],
+            valid_layers[args['Dropout']],
             nn.Linear(4096, 4096),
             nn.ReLU(inplace=True),
             nn.Linear(4096, len(args['classes'])),
@@ -70,10 +70,10 @@ class VGG(nn.Module):
         self.classifier = nn.Sequential(
             nn.Linear(512, 512),
             nn.ReLU(True),
-            layers[args['Dropout']],
+            valid_layers[args['Dropout']],
             nn.Linear(512, 256),
             nn.ReLU(True),
-            layers[args['Dropout']],
+            valid_layers[args['Dropout']],
             nn.Linear(256, len(args['classes'])),
         )
 
@@ -91,7 +91,7 @@ class VGG(nn.Module):
                 layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
             else:
                 layers += [nn.Conv2d(in_channels, x, kernel_size=3, padding=1),
-                           layers[args['batchnorm']](x),
+                           valid_layers[args['batchnorm']](x),
                            nn.ReLU(inplace=True)]
                 in_channels = x
         layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
@@ -105,17 +105,17 @@ class BasicBlock(nn.Module):
         super(BasicBlock, self).__init__()
         self.conv1 = nn.Conv2d(
             in_planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
-        self.bn1 = layers[args['batchnorm']](planes)
+        self.bn1 = valid_layers[args['batchnorm']](planes)
         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3,
                                stride=1, padding=1, bias=False)
-        self.bn2 = layers[args['batchnorm']](planes)
+        self.bn2 = valid_layers[args['batchnorm']](planes)
 
         self.shortcut = nn.Sequential()
         if stride != 1 or in_planes != self.expansion*planes:
             self.shortcut = nn.Sequential(
                 nn.Conv2d(in_planes, self.expansion*planes,
                           kernel_size=1, stride=stride, bias=False),
-                layers[args['batchnorm']](self.expansion*planes)
+                valid_layers[args['batchnorm']](self.expansion*planes)
             )
 
     def forward(self, x):
@@ -132,20 +132,20 @@ class Bottleneck(nn.Module):
     def __init__(self, in_planes, planes, args, stride=1):
         super(Bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(in_planes, planes, kernel_size=1, bias=False)
-        self.bn1 = layers[args['batchnorm']](planes)
+        self.bn1 = valid_layers[args['batchnorm']](planes)
         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3,
                                stride=stride, padding=1, bias=False)
-        self.bn2 = layers[args['batchnorm']](planes)
+        self.bn2 = valid_layers[args['batchnorm']](planes)
         self.conv3 = nn.Conv2d(planes, self.expansion *
                                planes, kernel_size=1, bias=False)
-        self.bn3 = layers[args['batchnorm']](self.expansion*planes)
+        self.bn3 = valid_layers[args['batchnorm']](self.expansion*planes)
 
         self.shortcut = nn.Sequential()
         if stride != 1 or in_planes != self.expansion*planes:
             self.shortcut = nn.Sequential(
                 nn.Conv2d(in_planes, self.expansion*planes,
                           kernel_size=1, stride=stride, bias=False),
-                layers[args['batchnorm']](self.expansion*planes)
+                valid_layers[args['batchnorm']](self.expansion*planes)
             )
 
     def forward(self, x):
