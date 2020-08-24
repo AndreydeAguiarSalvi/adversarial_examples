@@ -2,7 +2,7 @@ import tqdm
 import torch
 import torch.nn as nn
 from torchattacks import *
-from utils.models import *
+from utils.models2 import *
 from torch.utils.data import DataLoader
 
 
@@ -11,10 +11,10 @@ def create_argparser() -> dict:
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', type=int, default=100)  
     parser.add_argument('--batch_size', type=int, default=64) 
-    parser.add_argument('--model', type=str, default='ALEX', choices=['ALEX', 'VGG16', 'VGG19', 'RESNET18', 'RESNET50'], help='which model to train')
+    parser.add_argument('--model', type=str, default='ALEX', choices=['ALEXNET', 'VGG16', 'VGG19', 'RESNET18', 'RESNET50'], help='which model to train')
     parser.add_argument('--dataset', type=str, default='CIFAR10', choices=['MNIST', 'CIFAR10', 'CIFAR100'], help='which dataset to train/eval/attack')
-    parser.add_argument('--has_batchnorm', type=lambda x: (str(x).lower() == 'true'), default=True, help='mainting or remove batch normalization')
-    parser.add_argument('--has_dropout', type=lambda x: (str(x).lower() == 'true'), default=True, help='mainting or remove drop-out')
+    parser.add_argument('--batchnorm', type=str, default='BatchNorm', choices=['BatchNorm', 'Identity', 'InstanceNorm'], help='mainting or remove batch normalization')
+    parser.add_argument('--dropout', type=str, default='Dropout', choices=['Dropout', 'Identity'], help='mainting or remove drop-out')
     parser.add_argument('--attack', type=str, default='FGSM', choices=['FGSM', 'DeepFool', 'BIM', 'CW', 'RFGSM', 'PSG', 'PGD', 'APGD', 'FFGSM', 'TPGD'], help='which adversarial example to use')
     parser.add_argument('--lr0', type=float, default=0.001, help='initial learning rate')
     parser.add_argument('--momentum', type=float, default=0.9, help='momentum to Stochastic Gradient Descendent')
@@ -28,12 +28,10 @@ def create_argparser() -> dict:
 
 
 def create_model(args: dict) -> nn.Module:
-    classes = 10 if args['dataset'] in ['MNIST', 'CIFAR10'] else 100
-    if args['model'] == 'ALEX': return AlexNet(classes, args['has_dropout']).to(args['device'])
-    elif args['model'] == 'VGG16': return VGG('16', args['has_batchnorm'], args['has_dropout'], classes).to(args['device'])
-    elif args['model'] == 'VGG19': return VGG('16', args['has_batchnorm'], args['has_dropout'], classes).to(args['device'])
-    elif args['model'] == 'RESNET18': return ResNet('18', classes, args['has_batchnorm']).to(args['device'])
-    else: return ResNet('50', classes, args['has_batchnorm']).to(args['device'])
+    if args['model'] == 'ALEXNET': return AlexNet(args).to(args['device'])
+    elif 'VGG' in args['model']: return VGG(args).to(args['device'])
+    elif 'ResNet' in args['model']: return ResNet(args).to(args['device'])
+    else: return None
 
 
 def create_folder(args: dict):

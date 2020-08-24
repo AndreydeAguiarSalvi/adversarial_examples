@@ -22,10 +22,10 @@ cfg = {
 
 class AlexNet(nn.Module):
 
-    def __init__(self, num_classes=1000, has_Dropout=True):
+    def __init__(self, num_classes=1000, has_Dropout=True, in_3_ch=True):
         super(AlexNet, self).__init__()
         self.features = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2),
+            nn.Conv2d(3 if in_3_ch else 1, 64, kernel_size=11, stride=4, padding=2),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2),
             nn.Conv2d(64, 192, kernel_size=5, padding=2),
@@ -138,7 +138,7 @@ class Bottleneck(nn.Module):
 # resnet101 = ResNet(Bottleneck, [3, 4, 23, 3], **kwargs)
 class ResNet(nn.Module):
 
-    def __init__(self, kind='18', num_classes=1000, has_batchnorm=True):
+    def __init__(self, kind='18', num_classes=1000, has_batchnorm=True, in_3_ch=True):
         self.inplanes = 64
         if kind == '18':
             block = BasicBlock
@@ -150,7 +150,7 @@ class ResNet(nn.Module):
             block = Bottleneck
             layers = [3, 4, 23, 3]
         super(ResNet, self).__init__()
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
+        self.conv1 = nn.Conv2d(3 if in_3_ch else 1, 64, kernel_size=7, stride=2, padding=3,
                                bias=False)
         self.bn1 = nn.BatchNorm2d(64) if has_batchnorm else Identity()
         self.relu = nn.ReLU(inplace=True)
@@ -211,14 +211,14 @@ class ResNet(nn.Module):
 # vgg19_bn = VGG(make_layers(cfg['E'], batch_norm=True), **kwargs)
 class VGG(nn.Module):
 
-    def __init__(self, kind='16', has_batchnorm=True, has_dropout=True, num_classes=1000):
+    def __init__(self, kind='16', num_classes=1000, has_batchnorm=True, has_dropout=True, in_3_ch=True):
         super(VGG, self).__init__()
         if kind == '16':
-            if has_batchnorm: self.features = make_layers(cfg['D'], batch_norm=True)
-            else: self.features = make_layers(cfg['D'])
+            if has_batchnorm: self.features = make_layers(cfg['D'], batch_norm=True, in_3_ch=in_3_ch)
+            else: self.features = make_layers(cfg['D'], in_3_ch=in_3_ch)
         elif kind == '19':
-            if has_batchnorm: self.features = make_layers(cfg['E'], batch_norm=True)
-            else: self.features = make_layers(cfg['E'])
+            if has_batchnorm: self.features = make_layers(cfg['E'], batch_norm=True, in_3_ch=in_3_ch)
+            else: self.features = make_layers(cfg['E'], in_3_ch=in_3_ch)
         
         self.classifier = nn.Sequential(
             nn.Linear(512 * 7 * 7, 4096),
@@ -253,9 +253,9 @@ class VGG(nn.Module):
                 m.bias.data.zero_()
 
 
-def make_layers(cfg, batch_norm=False):
+def make_layers(cfg, batch_norm=False, in_3_ch=True):
     layers = []
-    in_channels = 3
+    in_channels = 3 if in_3_ch else 1
     for v in cfg:
         if v == 'M':
             layers += [nn.MaxPool2d(kernel_size=2, stride=2)]

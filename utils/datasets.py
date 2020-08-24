@@ -92,7 +92,7 @@ def get_CIFAR10(args, is_train=True, is_test=True, train_transform=None, test_tr
 
 
 def get_CIFAR100(args, is_train=True, is_test=True, train_transform=None, test_transform=None):
-    train_loader, valid_loader, test_loader, classes = None, None, None, None
+    train_loader, valid_loader, test_loader = None, None, None
     # Data Augmentation
     if train_transform is None:
         train_transform = transforms.Compose([
@@ -164,7 +164,7 @@ def get_CIFAR100(args, is_train=True, is_test=True, train_transform=None, test_t
         )
     # Classes names
     args['classes'] = [i for i in range(100)]
-    return train_loader, valid_loader, test_loader, classes   
+    return train_loader, valid_loader, test_loader
 
 
 def get_MNIST(args, is_train=True, is_test=True, train_transform=None, test_transform=None):
