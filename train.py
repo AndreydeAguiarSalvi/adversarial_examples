@@ -92,7 +92,7 @@ if __name__ == "__main__":
     args['best'] = args['folder'] + 'best.pt'
     args['last'] = args['folder'] + 'last.pt'
     
-    criterion = nn.BCELoss()
+    criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=args['lr0'], momentum=args['momentum'], nesterov=True)
     milestones = args['epochs_decay']
     scheduler = lr_scheduler.MultiStepLR(optimizer, milestones= milestones, gamma= args['gamma'])
