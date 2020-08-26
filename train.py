@@ -30,6 +30,8 @@ def train(model, args, train_loader, valid_loader, tb_writer, criterion, optimiz
     for epoch in range(args['epochs']):
         model.train()
         mloss = torch.zeros(1)
+        targets = 0
+        print(('\n' + '%10s' * 4) % ('Epoch', 'gpu_mem', 'Loss', 'Targets'))
         pbar = tqdm.tqdm(enumerate(train_loader), total=nb)  # progress bar    
         
         ################
@@ -44,11 +46,12 @@ def train(model, args, train_loader, valid_loader, tb_writer, criterion, optimiz
             loss.backward()
             optimizer.step()
             # cleaning gradients
-            optimizer.zero_gradients()
+            optimizer.zero_grad()
 
+            targets += len(Y)
             mloss = (mloss * i + loss.item()) / (i + 1)  # update mean loss
-            mem = '%.3gG' % (torch.cuda.memory_cached() / 1E9 if torch.cuda.is_available() else 0)  # (GB)
-            s = ('%10s' * 2 + '%10.3g' * 2) % ('%g/%g' % (epoch, args['epochs'] - 1), mem, mloss, len(Y))
+            mem = '%.3gG' % (torch.cuda.memory_cached() if torch.cuda.is_available() else 0)  # (GB)
+            s = ('%10s' * 2 + '%10.3g' * 2) % ('%g/%g' % (epoch, args['epochs'] - 1), mem, mloss, targets))
             pbar.set_description(s)
 
         # Update scheduler
@@ -57,11 +60,11 @@ def train(model, args, train_loader, valid_loader, tb_writer, criterion, optimiz
         validation = evaluate(model, criterion, args, valid_loader)
         
         # Saving
-        torch.save(model.parameters(), args['last'])
+        torch.save(model.state_dict(), args['last'])
         if validation['total_acc'] > best_fitness:
             best_fitness = validation['total_acc']
             wo_best = 0
-            torch.save(model.parameters(), args['best'])
+            torch.save(model.state_dict(), args['best'])
             f = open(args['folder'] + 'results.txt', 'w')
             for (key, value) in validation.items():
                 f.write(f"{key}: {value}\n")

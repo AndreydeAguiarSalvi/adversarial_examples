@@ -47,7 +47,7 @@ def evaluate(model: nn.Module, criterion: nn.CrossEntropyLoss, args: dict, loade
     model.eval()
 
     num_classes = len(args['classes'])
-    mloss = torch.zero(1).to(args['device'])
+    mloss = torch.zeros(1).to(args['device'])
     class_correct = list(0. for i in range(num_classes))
     class_total = list(0. for i in range(num_classes))
 
@@ -67,8 +67,8 @@ def evaluate(model: nn.Module, criterion: nn.CrossEntropyLoss, args: dict, loade
                 class_total[label] += 1
 
             mloss = (mloss * i + loss.item()) / (i + 1)
-            s = ('%10s' * 2 + '%10.3g' * 3) % ('%g/%g' % (i, len(loader) - 1), mem, mloss, len(labels) )
-            mem = '%.3gG' % (torch.cuda.memory_cached() / 1E9 if torch.cuda.is_available() else 0)  # (GB)
+            mem = '%.3gG' % (torch.cuda.memory_cached() if torch.cuda.is_available() else 0)  # (GB)
+            s = ('%10s' * 1 + '%10.3g' * 2) % ('%g/%g' % (i, len(loader) - 1), mem, mloss, len(labels) )
             pbar.set_description(s)
 
     for i in range(num_classes):
