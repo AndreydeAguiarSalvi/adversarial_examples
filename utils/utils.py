@@ -2,7 +2,7 @@ import tqdm
 import torch
 import torch.nn as nn
 from torchattacks import *
-from utils.models import *
+from utils.models import AlexNet, VGG, ResNet
 from torch.utils.data import DataLoader
 
 

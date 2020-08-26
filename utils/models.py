@@ -162,7 +162,7 @@ class ResNet(nn.Module):
         super(ResNet, self).__init__()
         self.in_planes = 64
 
-        self.conv1 = nn.Conv2d(1 if args['dataset'] == 'MNIST' else '3', 64, kernel_size=3,
+        self.conv1 = nn.Conv2d(1 if args['dataset'] == 'MNIST' else 3, 64, kernel_size=3,
                                stride=1, padding=1, bias=False)
         
         block = BasicBlock if '18' in args['model'] or '34' in args['model'] else Bottleneck
