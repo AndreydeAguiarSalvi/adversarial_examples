@@ -30,7 +30,7 @@ def create_argparser() -> dict:
 def create_model(args: dict) -> nn.Module:
     if args['model'] == 'ALEXNET': return AlexNet(args).to(args['device'])
     elif 'VGG' in args['model']: return VGG(args).to(args['device'])
-    elif 'ResNet' in args['model']: return ResNet(args).to(args['device'])
+    elif 'RESNET' in args['model']: return ResNet(args).to(args['device'])
     else: return None
 
 
