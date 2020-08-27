@@ -36,9 +36,13 @@ def create_model(args: dict) -> nn.Module:
 
 def create_folder(args: dict):
     import os
-    if not os.path.exists(args['model'] + os.sep + args['dataset'] + os.sep + args['attack'] + os.sep + args['try']):
-        os.makedirs(args['model'] + os.sep + args['dataset'] + os.sep + args['attack'] + os.sep + args['try'])
-    args['folder'] = args['model'] + os.sep + args['dataset'] + os.sep + args['attack'] + os.sep + args['try'] + os.sep
+    model = args['model']
+    if 'RESNET' in model or 'VGG' in model: model += '_norm-' + args['BatchNorm']
+    if 'ALEX' in model or 'VGG' in model: model += '_drop-' + args['Dropout']
+    path = model + os.sep + args['dataset'] + os.sep + args['attack'] + os.sep + args['try'] + os.sep
+    if not os.path.exists(path):
+        os.makedirs(path)
+    args['folder'] =  path
 
 
 def evaluate(model: nn.Module, criterion: nn.CrossEntropyLoss, args: dict, loader: DataLoader) -> dict:

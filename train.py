@@ -51,7 +51,7 @@ def train(model, args, train_loader, valid_loader, tb_writer, criterion, optimiz
             targets += len(Y)
             mloss = (mloss * i + loss.item()) / (i + 1)  # update mean loss
             mem = '%.3gG' % (torch.cuda.memory_cached() if torch.cuda.is_available() else 0)  # (GB)
-            s = ('%10s' * 2 + '%10.3g' * 2) % ('%g/%g' % (epoch, args['epochs'] - 1), mem, mloss, targets))
+            s = ('%10s' * 2 + '%10.3g' * 2) % ('%g/%g' % (epoch, args['epochs'] - 1), mem, mloss, targets)
             pbar.set_description(s)
 
         # Update scheduler

@@ -167,10 +167,10 @@ class ResNet(nn.Module):
         
         block = BasicBlock if '18' in args['model'] or '34' in args['model'] else Bottleneck
         if '18' in args['model']: num_blocks = [2, 2, 2, 2]
-        elif '34' in args['model']: [3, 4, 6, 3]
-        elif '50' in args['model']: [3, 4, 6, 3]
-        elif '101' in args['model']: [3, 4, 23, 3]
-        elif '152' in args['model']: [3, 8, 36, 3]
+        elif '34' in args['model']: num_blocks = [3, 4, 6, 3]
+        elif '50' in args['model']: num_blocks = [3, 4, 6, 3]
+        elif '101' in args['model']: num_blocks = [3, 4, 23, 3]
+        elif '152' in args['model']: num_blocks = [3, 8, 36, 3]
 
         self.bn1 = nn.BatchNorm2d(64)
         self.layer1 = self._make_layer(block, 64, num_blocks[0], args, stride=1)
