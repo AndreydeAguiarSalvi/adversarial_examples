@@ -37,8 +37,8 @@ def create_model(args: dict) -> nn.Module:
 def create_folder(args: dict):
     import os
     model = args['model']
-    if 'RESNET' in model or 'VGG' in model: model += '_norm-' + args['BatchNorm']
-    if 'ALEX' in model or 'VGG' in model: model += '_drop-' + args['Dropout']
+    if 'RESNET' in model or 'VGG' in model: model += '_norm-' + args['batchnorm']
+    if 'ALEX' in model or 'VGG' in model: model += '_drop-' + args['dropout']
     path = model + os.sep + args['dataset'] + os.sep + args['attack'] + os.sep + args['try'] + os.sep
     if not os.path.exists(path):
         os.makedirs(path)
