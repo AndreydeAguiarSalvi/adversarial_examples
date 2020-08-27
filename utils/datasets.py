@@ -82,7 +82,7 @@ def get_CIFAR10(args, is_train=True, is_test=True, train_transform=None, test_tr
     if is_test: 
         test_loader = DataLoader(
             test_set, batch_size=args['batch_size'],
-            num_workers=4
+            num_workers=4, shuffle=False
         )
     # Classes names
     classes = ('plane', 'car', 'bird', 'cat',
@@ -160,7 +160,7 @@ def get_CIFAR100(args, is_train=True, is_test=True, train_transform=None, test_t
     if is_test: 
         test_loader = DataLoader(
             test_set, batch_size=args['batch_size'],
-            num_workers=4
+            num_workers=4, shuffle=False
         )
     # Classes names
     args['classes'] = [i for i in range(100)]
@@ -223,7 +223,7 @@ def get_MNIST(args, is_train=True, is_test=True, train_transform=None, test_tran
     if is_test:
         test_loader = DataLoader(
             test_set, batch_size=args['batch_size'],
-            num_workers=4
+            num_workers=4, shuffle=False
         )
     # Classes names
     classes = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9') 

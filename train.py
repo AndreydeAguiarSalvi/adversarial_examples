@@ -1,5 +1,3 @@
-# using https://github.com/Harry24k/adversarial-attacks-pytorch
-
 ###################
 # General classes #
 ###################
@@ -50,8 +48,8 @@ def train(model, args, train_loader, valid_loader, tb_writer, criterion, optimiz
 
             targets += len(Y)
             mloss = (mloss * i + loss.item()) / (i + 1)  # update mean loss
-            mem = '%.3gG' % (torch.cuda.memory_cached() if torch.cuda.is_available() else 0)  # (GB)
-            s = ('%10s' * 2 + '%10.3g' * 2) % ('%g/%g' % (epoch, args['epochs'] - 1), mem, mloss, targets)
+            mem = torch.cuda.memory_cached()
+            s = ('%10s' + '%10.3g' * 3) % ('%g/%g' % (epoch, args['epochs'] - 1), mem, mloss, targets)
             pbar.set_description(s)
 
         # Update scheduler
