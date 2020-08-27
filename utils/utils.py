@@ -72,7 +72,7 @@ def evaluate(model: nn.Module, criterion: nn.CrossEntropyLoss, args: dict, loade
 
             mloss = (mloss * i + loss.item()) / (i + 1)
             mem = '%.3gG' % (torch.cuda.memory_cached() if torch.cuda.is_available() else 0)  # (GB)
-            s = ('%10s' * 1 + '%10.3g' * 2) % ('%g/%g' % (i, len(loader) - 1), mem, mloss, len(labels) )
+            s = ('%10s' * 2 + '%10.3g' * 2) % ('%g/%g' % (i, len(loader) - 1), mem, mloss, len(labels) )
             pbar.set_description(s)
 
     for i in range(num_classes):
