@@ -4,7 +4,7 @@ from utils.datasets import get_Dataset
 
 
 def test(model, args, loader):
-    epsilons = [0, .05, .1, .15, .2, .25, .3]
+    epsilons = args['eps'] if args['eps'] else [0, .05, .1, .15, .2, .25, .3]
     examples = []
     accuracies = []
 
@@ -12,7 +12,7 @@ def test(model, args, loader):
         args['epsilon'] = eps
         result = attack(model, args, loader)
         accuracies.append(result['total_acc'])
-        examples.append(args['adv_examples'])
+        examples.append(result['adv_examples'])
 
         f = open(args['folder'] + f"results_attack-{args['attack']}_eps-{eps}.txt", 'w')
         for (key, value) in result.items():

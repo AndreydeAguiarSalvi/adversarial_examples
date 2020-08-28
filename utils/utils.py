@@ -21,6 +21,7 @@ def create_argparser() -> dict:
     parser.add_argument('--batchnorm', type=str, default='BatchNorm', choices=['BatchNorm', 'Identity', 'InstanceNorm'], help='mainting or remove batch normalization')
     parser.add_argument('--dropout', type=str, default='Dropout', choices=['Dropout', 'Identity'], help='mainting or remove drop-out')
     parser.add_argument('--attack', type=str, default='FGSM', choices=['FGSM', 'DeepFool', 'BIM', 'CW', 'RFGSM', 'PSG', 'PGD', 'APGD', 'FFGSM', 'TPGD'], help='which adversarial example to use')
+    parser.add_argument('--eps', type=float, default=None, help='value to use as epsilon. If None, will be a range from 0 to 0.3')
     parser.add_argument('--lr0', type=float, default=0.001, help='initial learning rate')
     parser.add_argument('--momentum', type=float, default=0.9, help='momentum to Stochastic Gradient Descendent')
     parser.add_argument('--epochs_decay', nargs='*', type=int, help='kind of learning rate scheduler')
@@ -55,7 +56,7 @@ def get_folder(args: dict):
     import os
     folder = args['weights'].split(os.sep)
     args['folder'] = ''
-    for i in range(len(folder)): args['folder'] += folder[i] + os.sep
+    for i in range(len(folder) -1): args['folder'] += folder[i] + os.sep
 
 
 def evaluate(model: nn.Module, criterion: nn.CrossEntropyLoss, args: dict, loader: DataLoader) -> dict:
@@ -106,7 +107,6 @@ def attack(model: nn.Module, args: dict, loader: DataLoader) -> dict:
     class_correct = list(0. for i in range(num_classes))
     class_total = list(0. for i in range(num_classes))
     avd_ex = []
-    orig_ex = []
     targets = 0
 
     model.eval()
@@ -124,9 +124,8 @@ def attack(model: nn.Module, args: dict, loader: DataLoader) -> dict:
     for i, (X, Y) in pbar:
         X, Y = X.to(args['device']), Y.to(args['device'])
         
-        orig_ex.append(X[0].squeeze().detach().cpu().numpy())
         if args['attack'] in ['FGSM', 'PGD']: 
-            X = attack(X, Y).to(args['device'])
+            if args['eps'] > .0: X = attack(X, Y).to(args['device'])
         
         avd_ex.append(X[0].squeeze().detach().cpu().numpy())
 
@@ -151,7 +150,6 @@ def attack(model: nn.Module, args: dict, loader: DataLoader) -> dict:
         result['total_acc'] += (100 * class_correct[i] / class_total[i]) / num_classes 
     
     result['adv_examples'] = avd_ex
-    result['orig_examples'] = orig_ex
 
     return result
 
