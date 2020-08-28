@@ -112,14 +112,14 @@ def attack(model: nn.Module, args: dict, loader: DataLoader) -> dict:
     model.eval()
 
     # From https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20with%20MNIST.ipynb
-    if args['attack'] == 'FGSM': attack = FGSM(model, eps=args['epsilon'])
+    if args['attack'] == 'FGSM': attack = FGSM(model, eps=args['eps'])
 
     # From https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20with%20CIFAR10.ipynb
-    elif args['attack'] == 'PGD': attack = PGD(model, eps=args['epsilon'], alpha=2/255, steps=7)
+    elif args['attack'] == 'PGD': attack = PGD(model, eps=args['eps'], alpha=2/255, steps=7)
 
     # All attacks https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20with%20Imagenet.ipynb
     
-    print(('\n' + '%10s' * 4) % ('Items', 'gpu_mem', 'Corrects', 'Targets'))
+    print(('\n' + '%10s' * 4) % ('Acc', 'eps', 'Corrects', 'Targets'))
     pbar = tqdm.tqdm(enumerate(loader), total=len(loader))  # progress bar
     for i, (X, Y) in pbar:
         X, Y = X.to(args['device']), Y.to(args['device'])
@@ -138,11 +138,10 @@ def attack(model: nn.Module, args: dict, loader: DataLoader) -> dict:
             class_correct[label] += c[j].item()
             class_total[label] += 1
         
-        mem = torch.cuda.memory_cached()
         targets += len(Y)
         corrects = 0
         for item in class_correct: corrects += item 
-        s = ('%10s' + '%10.3g' * 3) % ('%g/%g' % (i, len(loader) - 1), mem, corrects, targets )
+        s = ('%10.3g' * 4) % ( (100*corrects/targets), args['eps'], corrects, targets )
         pbar.set_description(s)
     
     for i in range(num_classes):

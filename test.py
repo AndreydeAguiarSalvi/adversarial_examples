@@ -4,12 +4,12 @@ from utils.datasets import get_Dataset
 
 
 def test(model, args, loader):
-    epsilons = args['eps'] if args['eps'] else [0, .05, .1, .15, .2, .25, .3]
+    epsilons = [args['eps']] if args['eps'] else [0, .05, .1, .15, .2, .25, .3]
     examples = []
     accuracies = []
 
     for eps in epsilons:
-        args['epsilon'] = eps
+        args['eps'] = eps
         result = attack(model, args, loader)
         accuracies.append(result['total_acc'])
         examples.append(result['adv_examples'])
