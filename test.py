@@ -25,6 +25,7 @@ def test(model, args, loader):
 
 if __name__ == "__main__":
     args = create_argparser()
+    if args['device'] != 'cpu': args['device'] = 'cuda:' + args['device']
     get_folder(args)
     _, _, test_loader = get_Dataset(args, False, True)
 

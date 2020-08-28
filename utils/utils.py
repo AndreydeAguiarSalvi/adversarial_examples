@@ -125,7 +125,9 @@ def attack(model: nn.Module, args: dict, loader: DataLoader) -> dict:
         X, Y = X.to(args['device']), Y.to(args['device'])
         
         orig_ex.append(X[0].squeeze().detach().cpu().numpy())
-        if args['attack'] == 'FGSM': X = attack(X, args['epsilon'])
+        if args['attack'] in ['FGSM', 'PGD']: 
+            X = attack(X, Y).to(args['device'])
+        
         avd_ex.append(X[0].squeeze().detach().cpu().numpy())
 
         Y_hat = model(X)
