@@ -12,7 +12,12 @@ def test(model, args, loader):
         args['epsilon'] = eps
         result = attack(model, args, loader)
         accuracies.append(result['total_acc'])
-        examples.append(args['examples'])
+        examples.append(args['adv_examples'])
+
+        f = open(args['folder'] + f"results_attack-{args['attack']}_eps-{eps}.txt", 'w')
+        for (key, value) in result.items():
+            if 'examples' not in key: f.write(f"{key}: {value}\n")
+        f.close()
 
     save_accuracies(epsilons, accuracies, args)
     save_examples(epsilons, examples, args)
