@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 class Identity(nn.Module):
     def __init__(self, x=None):
-        super(Identity, x, self).__init__()
+        super(Identity, self).__init__()
 
     def forward(self, x):
         return x

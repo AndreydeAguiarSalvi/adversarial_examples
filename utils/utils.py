@@ -52,6 +52,7 @@ def create_folder(args: dict):
 
 
 def get_folder(args: dict):
+    import os
     folder = args['weights'].split(os.sep)
     args['folder'] = ''
     for i in range(len(folder)): args['folder'] += folder[i] + os.sep

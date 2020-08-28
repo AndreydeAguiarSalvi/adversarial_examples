@@ -26,11 +26,11 @@ def test(model, args, loader):
 if __name__ == "__main__":
     args = create_argparser()
     get_folder(args)
+    _, _, test_loader = get_Dataset(args, False, True)
 
     model = create_model(args).to(args['device'])
     chkpt = torch.load(args['weights'], map_location=args['device'])
     model.load_state_dict(chkpt)
 
-    _, _, test_loader = get_Dataset(args, False, True)
     
     test(model, args, test_loader)
