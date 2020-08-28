@@ -162,7 +162,7 @@ def save_accuracies(epsilons: list, accuracies: list, args: dict):
     plt.xlabel("Epsilon")
     plt.ylabel("Accuracy")
     # plt.show()
-    plt.savefig(args['folder'] + 'results.png', dpi=300)
+    plt.savefig(args['folder'] + f"results_{args['attack']}.png", dpi=300)
 
 
 def save_examples(epsilons: list, examples: list, args: dict):
@@ -180,4 +180,4 @@ def save_examples(epsilons: list, examples: list, args: dict):
             plt.title("{} -> {}".format(orig, adv))
             plt.imshow(ex)
     plt.tight_layout()
-    plt.savefig(args['folder'] + 'examples.png', dpi=300)
+    plt.savefig(args['folder'] + f"examples_{args['attack']}.png", dpi=300)
