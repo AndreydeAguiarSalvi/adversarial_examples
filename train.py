@@ -94,7 +94,7 @@ if __name__ == "__main__":
     args['last'] = args['folder'] + 'last.pt'
     
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=args['lr0'], momentum=args['momentum'], nesterov=True)
+    optimizer = optim.SGD(model.parameters(), lr=args['lr0'], momentum=args['momentum'], nesterov=True, weight_decay=1E-8)
     milestones = args['epochs_decay']
     scheduler = lr_scheduler.MultiStepLR(optimizer, milestones= milestones, gamma= args['gamma'])
 

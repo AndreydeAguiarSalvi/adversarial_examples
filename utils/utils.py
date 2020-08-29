@@ -103,11 +103,12 @@ def evaluate(model: nn.Module, criterion: nn.CrossEntropyLoss, args: dict, loade
 def attack(model: nn.Module, args: dict, loader: DataLoader) -> dict:
     attack = None
     num_classes = len(args['classes'])
+    classes = args['classes']
     result = {'total_acc': .0}
 
     class_correct = list(0. for i in range(num_classes))
     class_total = list(0. for i in range(num_classes))
-    avd_ex = []
+    adv_ex = []
     targets = 0
 
     model.eval()
@@ -128,12 +129,17 @@ def attack(model: nn.Module, args: dict, loader: DataLoader) -> dict:
         if args['attack'] in ['FGSM', 'PGD']: 
             if args['eps'] > .0: X = attack(X, Y).to(args['device'])
         
-        avd_ex.append(X[0].squeeze().detach().cpu().numpy())
-
         Y_hat = model(X)
         _, predicted = torch.max(Y_hat.data, 1)
         c = (predicted == Y).squeeze()
         
+        if len(adv_ex) < 5:
+            adv_ex.append((
+                classes[Y[0].item()], 
+                classes[Y_hat.max(1, keepdim=True)[1][0].item()], 
+                X[0].permute(1, 2, 0).squeeze().detach().cpu().numpy()
+            ))
+
         for j in range(len(Y)):
             label = Y[j]
             class_correct[label] += c[j].item()
@@ -149,7 +155,7 @@ def attack(model: nn.Module, args: dict, loader: DataLoader) -> dict:
         result[ args['classes'][i] ] = 100 * class_correct[i] / class_total[i]
         result['total_acc'] += (100 * class_correct[i] / class_total[i]) / num_classes 
     
-    result['adv_examples'] = avd_ex
+    result['adv_examples'] = adv_ex
 
     return result
 
@@ -181,4 +187,4 @@ def save_examples(epsilons: list, examples: list, args: dict):
             plt.title("{} -> {}".format(orig, adv))
             plt.imshow(ex)
     plt.tight_layout()
-    plt.savefig(args['folder'] + f"examples_{args['attack']}.png", dpi=300)
+    plt.savefig(args['folder'] + f"examples_{args['attack']}.png", dpi=300, transparent=True)
