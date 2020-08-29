@@ -15,6 +15,10 @@ def get_Dataset(args, is_train=True, is_test=True, train_transform=None, test_tr
 
 def get_CIFAR10(args, is_train=True, is_test=True, train_transform=None, test_transform=None):
     train_loader, valid_loader, test_loader, classes = None, None, None, None
+    args['normalize'] = {
+        'mean': (.491399679, .482158408, .446530914),
+        'std': (.247032232, .243485128, .261587842)
+    }
     # Data Augmentation
     if train_transform is None:
         train_transform = transforms.Compose([
@@ -28,19 +32,13 @@ def get_CIFAR10(args, is_train=True, is_test=True, train_transform=None, test_tr
             ),
             # transforms.Resize((64, 64)),
             transforms.ToTensor(),
-            transforms.Normalize(
-                (.491399679, .482158408, .446530914), 
-                (.247032232, .243485128, .261587842)
-            )
+            transforms.Normalize(args['normalize']['mean'], args['normalize']['std'])
         ])
     if test_transform is None:
         test_transform = transforms.Compose([
             # transforms.Resize((64, 64)),
             transforms.ToTensor(),
-            transforms.Normalize(
-                (.491399679, .482158408, .446530914), 
-                (.247032232, .243485128, .261587842)
-            )
+            transforms.Normalize(args['normalize']['mean'], args['normalize']['std'])
         ])
     
     # Data sets
@@ -93,6 +91,10 @@ def get_CIFAR10(args, is_train=True, is_test=True, train_transform=None, test_tr
 
 def get_CIFAR100(args, is_train=True, is_test=True, train_transform=None, test_transform=None):
     train_loader, valid_loader, test_loader = None, None, None
+    args['normalize'] = {
+        'mean': (0.5070751592371323, 0.48654887331495095, 0.4409178433670343),
+        'std': (0.2673342858792401, 0.2564384629170883, 0.27615047132568404)
+    }
     # Data Augmentation
     if train_transform is None:
         train_transform = transforms.Compose([
@@ -106,19 +108,13 @@ def get_CIFAR100(args, is_train=True, is_test=True, train_transform=None, test_t
             ),
             # transforms.Resize((64, 64)),
             transforms.ToTensor(),
-            transforms.Normalize(
-                (0.5070751592371323, 0.48654887331495095, 0.4409178433670343), 
-                (0.2673342858792401, 0.2564384629170883, 0.27615047132568404)
-            )
+            transforms.Normalize(args['normalize']['mean'], args['normalize']['std'])
         ])
     if test_transform is None:
         test_transform = transforms.Compose([
             # transforms.Resize((64, 64)),
             transforms.ToTensor(),
-            transforms.Normalize(
-                (0.5070751592371323, 0.48654887331495095, 0.4409178433670343), 
-                (0.2673342858792401, 0.2564384629170883, 0.27615047132568404)
-            )
+            transforms.Normalize(args['normalize']['mean'], args['normalize']['std'])
         ])
     
     # Data sets
@@ -169,7 +165,10 @@ def get_CIFAR100(args, is_train=True, is_test=True, train_transform=None, test_t
 
 def get_MNIST(args, is_train=True, is_test=True, train_transform=None, test_transform=None):
     train_loader, valid_loader, test_loader, classes = None, None, None, None
-    
+    args['normalize'] = {
+        'mean': (0.1307,),
+        'std': (0.3081,)
+    }
     # Data Augmentation        
     if train_transform is None:
         train_transform = transforms.Compose([
@@ -177,13 +176,13 @@ def get_MNIST(args, is_train=True, is_test=True, train_transform=None, test_tran
             # transforms.RandomRotation(15),
             transforms.Resize((32, 32)),
             transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,))
+            transforms.Normalize(args['normalize']['mean'], args['normalize']['std'])
         ])
     if test_transform is None:
         test_transform = transforms.Compose([
             transforms.Resize((32, 32)),
             transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,))
+            transforms.Normalize(args['normalize']['mean'], args['normalize']['std'])
         ])
     
     if is_train:

@@ -137,7 +137,7 @@ def attack(model: nn.Module, args: dict, loader: DataLoader) -> dict:
             adv_ex.append((
                 classes[Y[0].item()], 
                 classes[Y_hat.max(1, keepdim=True)[1][0].item()], 
-                X[0].permute(1, 2, 0).squeeze().detach().cpu().numpy()
+                denormalize(X[0], args).permute(1, 2, 0).squeeze().detach().cpu().numpy()
             ))
 
         for j in range(len(Y)):
@@ -158,6 +158,10 @@ def attack(model: nn.Module, args: dict, loader: DataLoader) -> dict:
     result['adv_examples'] = adv_ex
 
     return result
+
+
+def denormalize(imgs, args):
+    imgs = imgs * args['normalize']['std'] + args['normalize']['mean']
 
 
 def save_accuracies(epsilons: list, accuracies: list, args: dict):
