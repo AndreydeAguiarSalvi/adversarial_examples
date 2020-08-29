@@ -1,0 +1,4 @@
+lr0: 0.01
+gamma: 0.5
+epochs_decay: [0.5, 0.75]
+model: RESNET18

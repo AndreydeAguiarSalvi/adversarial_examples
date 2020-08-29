@@ -28,6 +28,7 @@ def create_argparser() -> dict:
     parser.add_argument('--gamma', type=float, default=.5, help='gamma used in learning rate decay')
     parser.add_argument('--try', type=str, default='0', help='number of attempt')
     parser.add_argument('--weights', type=str, help='weights to load')
+    parser.add_argument('--only_norm', type=lambda x: (str(x).lower() == 'true'), help='if true, freezes other weights and trains only the normalization')
     parser.add_argument('--device', help='device id (i.e. 0 or 0,1 or cpu)')
     args = vars(parser.parse_args())
 
@@ -156,13 +157,13 @@ def attack(model: nn.Module, args: dict, loader: DataLoader) -> dict:
 def save_accuracies(epsilons: list, accuracies: list, args: dict):
     plt.figure(figsize=(5,5))
     plt.plot(epsilons, accuracies, "*-")
-    plt.yticks(np.arange(0, 1.1, step=0.1))
+    plt.yticks(np.arange(0, 105., step=5.))
     plt.xticks(np.arange(0, .35, step=0.05))
     plt.title("Accuracy vs Epsilon")
     plt.xlabel("Epsilon")
     plt.ylabel("Accuracy")
-    # plt.show()
-    plt.savefig(args['folder'] + f"results_{args['attack']}.png", dpi=300)
+    plt.grid()
+    plt.savefig(args['folder'] + f"results_{args['attack']}.png", dpi=300, transparent=True)
 
 
 def save_examples(epsilons: list, examples: list, args: dict):
