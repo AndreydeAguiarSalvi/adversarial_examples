@@ -16,7 +16,7 @@ def create_argparser() -> dict:
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', type=int, default=100)  
     parser.add_argument('--batch_size', type=int, default=64) 
-    parser.add_argument('--model', type=str, default='RESNET18', choices=['ALEXNET', 'VGG16', 'VGG19', 'RESNET18', 'RESNET50'], help='which model to train')
+    parser.add_argument('--model', type=str, default='RESNET18', choices=['MOBILESMALL', 'MOBILELARGE', 'VGG16', 'VGG19', 'RESNET18', 'RESNET50'], help='which model to train')
     parser.add_argument('--dataset', type=str, default='CIFAR10', choices=['MNIST', 'CIFAR10', 'CIFAR100'], help='which dataset to train/eval/attack')
     parser.add_argument('--batchnorm', type=str, default='BatchNorm', choices=['BatchNorm', 'Identity', 'InstanceNorm'], help='mainting or remove batch normalization')
     parser.add_argument('--dropout', type=str, default='Dropout', choices=['Dropout', 'Identity'], help='mainting or remove drop-out')
@@ -36,10 +36,12 @@ def create_argparser() -> dict:
 
 
 def create_model(args: dict) -> nn.Module:
-    if args['model'] == 'ALEXNET': return AlexNet(args).to(args['device'])
-    elif 'VGG' in args['model']: return VGG(args).to(args['device'])
+    if 'VGG' in args['model']: return VGG(args).to(args['device'])
     elif 'RESNET' in args['model']: return ResNet(args).to(args['device'])
-    else: return None
+    elif 'MOBILE' in args['model']: 
+        args['model_mode'] = 'LARGE' if 'LARGE' in args['model'] else 'SMALL'
+        return MobileNetV3(args).to(args['device'])
+    else return None
 
 
 def create_folder(args: dict):

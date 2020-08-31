@@ -69,7 +69,7 @@ def train(model, args, train_loader, valid_loader, tb_writer, criterion, optimiz
             f.close()
         else:
             wo_best += 1
-            if wo_best == 15: 
+            if wo_best == 15 and epoch > 50: 
                 print('Ending training due to early stop')
                 break
     
