@@ -41,6 +41,10 @@ def train(model, args, train_loader, valid_loader, tb_writer, criterion, optimiz
             Y_hat = model(X)
             # model loss and backpropagation
             loss = criterion(Y_hat, Y)
+
+            # Gaussian Weight Decay if necessary
+            if args['dist']: loss += compute_gaussian_decay(model, args)
+
             loss.backward()
             optimizer.step()
             # cleaning gradients
@@ -79,6 +83,7 @@ def train(model, args, train_loader, valid_loader, tb_writer, criterion, optimiz
 
 if __name__ == "__main__":
     args = create_argparser()
+    if args['gaussian_decay']: args['dist'] = 'gaussian'
     if args['device'] != 'cpu': args['device'] = 'cuda:' + args['device']
     create_folder(args)
     

@@ -3,12 +3,17 @@ import torch
 import numpy as np
 import torch.nn as nn
 from torchattacks import *
-from utils.models import AlexNet, VGG, ResNet
+from utils.models import VGG, ResNet, MobileNetV3
 from torch.utils.data import DataLoader
 
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
+import math
+ft = torch.FloatTensor
+square = math.sqrt(2. * math.pi)
+half = ft([-.5])
 
 
 def create_argparser() -> dict:
@@ -29,6 +34,7 @@ def create_argparser() -> dict:
     parser.add_argument('--try', type=str, default='0', help='number of attempt')
     parser.add_argument('--weights', type=str, help='weights to load')
     parser.add_argument('--only_norm', type=lambda x: (str(x).lower() == 'true'), help='if true, freezes other weights and trains only the normalization')
+    parser.add_argument('--gaussian_decay', type=lambda x: (str(x).lower() == 'true'), help='if true, performs a weight decay to force weigth away from a G. D.')
     parser.add_argument('--device', help='device id (i.e. 0 or 0,1 or cpu)')
     args = vars(parser.parse_args())
 
@@ -41,14 +47,14 @@ def create_model(args: dict) -> nn.Module:
     elif 'MOBILE' in args['model']: 
         args['model_mode'] = 'LARGE' if 'LARGE' in args['model'] else 'SMALL'
         return MobileNetV3(args).to(args['device'])
-    else return None
+    else: return None
 
 
 def create_folder(args: dict):
     import os
     model = args['model']
-    if 'RESNET' in model or 'VGG' in model: model += '_norm-' + args['batchnorm']
-    if 'ALEX' in model or 'VGG' in model: model += '_drop-' + args['dropout']
+    if 'RESNET' in model or 'VGG' in model or 'MOBILE' in model: model += '_norm-' + args['batchnorm']
+    if 'MOBILE' in model or 'VGG' in model: model += '_drop-' + args['dropout']
     path = model + os.sep + args['dataset'] + os.sep + args['try'] + os.sep
     if not os.path.exists(path):
         os.makedirs(path)
@@ -196,3 +202,24 @@ def save_examples(epsilons: list, examples: list, args: dict):
             plt.imshow(ex)
     plt.tight_layout()
     plt.savefig(args['folder'] + f"examples_{args['attack']}.png", dpi=300, transparent=True)
+
+
+def compute_gaussian_decay(model: nn.Module, args: dict) -> torch.FloatTensor:
+
+    loss = ft([.0])
+    
+    def is_gaussian(x, y):
+        mean = y.mean()
+        std = y.std()
+        fraction = ft( [1. / (std * square)] )
+        z = x.sub(mean).div(std).pow(2.)
+        exp = torch.exp(half.mul(z))
+        return fraction.mul(exp)
+
+    for i, param in enumerate(model):
+        if args['dist'] == 'gaussian': aux = torch.Tensor(param.shape, device=args['device']).normal_(.0, 1.)
+        else: aux = torch.Tensor(param.shape, device=args['device']).uniform_(-1., 1.)
+        
+        loss += is_gaussian(param, aux).mean()
+    
+    return loss.div_(i)
