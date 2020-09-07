@@ -43,7 +43,8 @@ def train(model, args, train_loader, valid_loader, tb_writer, criterion, optimiz
             loss = criterion(Y_hat, Y)
 
             # Gaussian Weight Decay if necessary
-            if args['dist']: loss += compute_gaussian_decay(model, args)
+            if args['gaussian_decay']: loss += compute_gaussian_decay(model, args).item()
+            elif args['euclidean_decay']: losss += compute_euclidean_decay(model, args).item()
 
             loss.backward()
             optimizer.step()

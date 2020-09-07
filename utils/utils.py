@@ -35,6 +35,7 @@ def create_argparser() -> dict:
     parser.add_argument('--weights', type=str, help='weights to load')
     parser.add_argument('--only_norm', type=lambda x: (str(x).lower() == 'true'), help='if true, freezes other weights and trains only the normalization')
     parser.add_argument('--gaussian_decay', type=lambda x: (str(x).lower() == 'true'), help='if true, performs a weight decay to force weigth away from a G. D.')
+    parser.add_argument('--euclidean_decay', type=lambda x: (str(x).lower() == 'true'), help='if true, performs an euclidean decay to force weigth away from a G. D.')
     parser.add_argument('--device', help='device id (i.e. 0 or 0,1 or cpu)')
     args = vars(parser.parse_args())
 
@@ -211,15 +212,31 @@ def compute_gaussian_decay(model: nn.Module, args: dict) -> torch.FloatTensor:
     def is_gaussian(x, y):
         mean = y.mean()
         std = y.std()
-        fraction = ft( [1. / (std * square)] )
+        fraction = ft( [1. / (std * square)] ).to(args['device'])
         z = x.sub(mean).div(std).pow(2.)
-        exp = torch.exp(half.mul(z))
+        exp = torch.exp(half.to(args['device']).mul(z))
         return fraction.mul(exp)
 
-    for i, param in enumerate(model):
-        if args['dist'] == 'gaussian': aux = torch.Tensor(param.shape, device=args['device']).normal_(.0, 1.)
-        else: aux = torch.Tensor(param.shape, device=args['device']).uniform_(-1., 1.)
+    for i, param in enumerate(model.parameters()):
+        if args['dist'] == 'gaussian': aux = torch.Tensor(param.shape).normal_(.0, 1.).to(args['device'])
+        else: aux = torch.Tensor(param.shape).uniform_(-1., 1.).to(args['device'])
         
         loss += is_gaussian(param, aux).mean()
+    loss.div_(i)
+    return loss
+
+def compute_euclidean_decay(model: nn.Module, args: dict) -> torch.FloatTensor:
+
+    loss = ft[.0]
+
+    def is_gaussian(x, y):
+        one = ft([1.])
+        e_dist = torch.cdist(x, y, p=2)
+        one.div_(e_dist)
+        return one
     
-    return loss.div_(i)
+    for i, param in enumerate(model.parameters()):
+        aux = torch.Tensor(param.shape).normal_(.0, .1).to(args['device'])
+        loss += is_gaussian(param, aux)
+    
+    return loss
